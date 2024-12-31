@@ -1,0 +1,47 @@
+name: Version Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout PR branch
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Extract New Version from PR branch
+      - name: Read New Version
+        id: read_new_version
+        run: |
+          NEW_VERSION=$(grep -oP 'var Version = "\K[^\"]+' version/version.go)
+          echo "New version found: $NEW_VERSION"
+          echo "::set-output name=VERSION::$NEW_VERSION"
+
+      # Step 3: Checkout Main branch for comparison
+      - name: Checkout Main Branch Version File
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            version/version.go
+          ref: main
+
+      # Step 4: Extract Existing Version from Main branch
+      - name: Read Existing Version from Main
+        id: read_existing_version
+        run: |
+          EXISTING_VERSION=$(grep -oP 'var Version = "\K[^\"]+' version/version.go)
+          echo "Existing version on main: $EXISTING_VERSION"
+          echo "::set-output name=EXISTING_VERSION::$EXISTING_VERSION"
+
+      # Step 5: Compare Versions
+      - name: Check Version is Incremented
+        uses: jackbilestech/semver-compare@1.0.4
+        with:
+          head: "${{ steps.read_new_version.outputs.VERSION }}"
+          base: "${{ steps.read_existing_version.outputs.EXISTING_VERSION }}"
+          operator: ">"
