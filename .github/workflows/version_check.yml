@@ -22,13 +22,11 @@ jobs:
           echo "New version found: $NEW_VERSION"
           echo "::set-output name=VERSION::$NEW_VERSION"
 
-      # Step 3: Checkout Main branch for comparison
+      # Step 3: Checkout Main Branch for pyproject.toml
       - name: Checkout Main Branch Version File
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            pyproject.toml
-          ref: main
+        run: |
+          git fetch origin main
+          git checkout origin/main -- pyproject.toml
 
       # Step 4: Extract Existing Version from Main branch
       - name: Read Existing Version from Main
