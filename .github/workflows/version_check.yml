@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            version/version.go
+            version
           ref: main
 
       # Step 4: Extract Existing Version from Main branch
