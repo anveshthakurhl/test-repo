@@ -3,9 +3,11 @@ name: Version Check
 on:
   push:
     branches:
+      - main
       - feature/uno2-next
   pull_request:
     branches:
+      - main
       - feature/uno2-next
 
 jobs:
