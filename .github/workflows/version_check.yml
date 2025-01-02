@@ -1,20 +1,23 @@
 name: Version Check
 
 on:
+  push:
+    branches:
+      - feature/uno2-next
   pull_request:
     branches:
-      - main
+      - feature/uno2-next
 
 jobs:
   check-version:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout PR branch
+      # Step 1: Checkout PR or Push Branch
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Extract New Version from PR branch
+      # Step 2: Extract New Version from Current Branch
       - name: Read New Version
         id: read_new_version
         run: |
@@ -22,18 +25,20 @@ jobs:
           echo "New version found: $NEW_VERSION"
           echo "::set-output name=VERSION::$NEW_VERSION"
 
-      # Step 3: Checkout Main Branch for pyproject.toml
-      - name: Checkout Main Branch Version File
+      # Step 3: Checkout Target Branch Version File
+      - name: Checkout Target Branch Version File
         run: |
-          git fetch origin main
-          git checkout origin/main -- pyproject.toml
+          TARGET_BRANCH=${{ github.event.pull_request.base.ref || github.ref_name }}
+          echo "Target branch is $TARGET_BRANCH"
+          git fetch origin $TARGET_BRANCH
+          git checkout origin/$TARGET_BRANCH -- pyproject.toml
 
-      # Step 4: Extract Existing Version from Main branch
-      - name: Read Existing Version from Main
+      # Step 4: Extract Existing Version from Target Branch
+      - name: Read Existing Version from Target Branch
         id: read_existing_version
         run: |
           EXISTING_VERSION=$(grep -E '^version = "[^"]+"' pyproject.toml | sed 's/version = "//; s/"//')
-          echo "Existing version on main: $EXISTING_VERSION"
+          echo "Existing version on target branch: $EXISTING_VERSION"
           echo "::set-output name=EXISTING_VERSION::$EXISTING_VERSION"
 
       # Step 5: Compare Versions

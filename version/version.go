@@ -12,12 +12,12 @@ var Name = "monopoly"
 var Description = "monopoly - waypoint service"
 
 // Version is the main version number that is being run at the moment.
-var Version = "0.15.61"
+var Version = "0.15.62"
 
 // Prerelease is a prerelease marker for the version. If this is "" (empty string)
 // then it means that it is a final release. Otherwise, this is a prerelease
 // such as "dev" (in development), "beta", "rc1", etc.
-var Prerelease = "dev"
+var Prerelease = "stage"
 
 // SemVer is an instance of version.Version. This has the secondary
 // benefit of verifying during tests and init time that our version is a
